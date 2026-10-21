@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src * data: blob:; style-src 'self'; script-src 'self';
+                 connect-src https://api.open-meteo.com https://geocoding-api.open-meteo.com">
+  <title>Новая вкладка</title>
+  <link rel="icon" href="icon.png">
+  <link rel="stylesheet" href="start.css">
+</head>
+<body>
+  <div id="bg"></div>
+
+  <main>
+    <section id="hero">
+      <div id="clock">--:--</div>
+      <div id="date"></div>
+      <button id="greeting" title="Нажмите, чтобы изменить имя"></button>
+    </section>
+
+    <form id="search" autocomplete="off">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.4-4.4"/></svg>
+      <input id="q" type="text" spellcheck="false" placeholder="Поиск в Google или адрес сайта">
+    </form>
+
+    <section id="tiles"></section>
+
+    <section id="widgets">
+      <article class="card" id="weather">
+        <header>
+          <button id="city" title="Нажмите, чтобы сменить город">Астана</button>
+          <span class="muted" id="weather-updated"></span>
+        </header>
+        <div id="weather-body" class="muted">Загружаю погоду…</div>
+      </article>
+
+      <article class="card" id="rates">
+        <header>
+          <span>Курсы валют, ₸</span>
+          <span class="muted" id="rates-source"></span>
+        </header>
+        <div id="rates-body" class="muted">Загружаю курсы…</div>
+      </article>
+    </section>
+  </main>
+
+  <button id="theme-btn" class="round" title="Оформление">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.9-.7-1.3-.7-2.2 0-.9.7-1.6 1.6-1.6H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.2"/><circle cx="10.5" cy="7" r="1.2"/><circle cx="15" cy="7.5" r="1.2"/></svg>
+  </button>
+
+  <div id="theme-panel" hidden>
+    <div class="panel-title">Оформление</div>
+    <div id="themes"></div>
+    <label class="upload">
+      <input id="photo" type="file" accept="image/*">
+      <span>Своё фото…</span>
+    </label>
+  </div>
+
+  <div id="dialog" hidden>
+    <form id="dialog-form" class="card">
+      <div class="panel-title" id="dialog-title">Добавить сайт</div>
+      <label>Название<input id="site-name" type="text" spellcheck="false"></label>
+      <label>Адрес<input id="site-url" type="text" spellcheck="false" placeholder="например, kaspi.kz"></label>
+      <div class="actions">
+        <button type="button" id="dialog-cancel">Отмена</button>
+        <button type="submit" class="primary">Сохранить</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="start.js"></script>
+</body>
+</html>

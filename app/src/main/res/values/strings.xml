@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Мой браузер</string>
+    <string name="address_hint">Поиск или адрес сайта</string>
+</resources>

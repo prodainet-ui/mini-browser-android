@@ -1,0 +1,46 @@
+plugins {
+    id 'com.android.application'
+}
+
+def buildNumber = (System.getenv('GITHUB_RUN_NUMBER') ?: '1') as Integer
+
+android {
+    namespace 'kz.marzhan.browser'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'kz.marzhan.browser'
+        minSdk 29
+        targetSdk 34
+        versionCode buildNumber
+        versionName "1.0.${buildNumber}"
+    }
+
+    // Постоянный ключ подписи: новые версии ставятся поверх старых без удаления.
+    signingConfigs {
+        release {
+            storeFile file('release.jks')
+            storePassword 'minibrowser'
+            keyAlias 'minibrowser'
+            keyPassword 'minibrowser'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+        encoding 'UTF-8'
+    }
+
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+}
