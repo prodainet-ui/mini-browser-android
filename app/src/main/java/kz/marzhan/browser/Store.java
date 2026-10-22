@@ -183,6 +183,23 @@ final class Store {
         return prefs.getInt("sessionActive", 0);
     }
 
+    /** system | light | dark */
+    static String theme(Context context) {
+        return context.getSharedPreferences("mb", Context.MODE_PRIVATE).getString("theme", "system");
+    }
+
+    void setTheme(String theme) {
+        prefs.edit().putString("theme", theme).commit(); // commit: сразу после этого окно пересоздаётся
+    }
+
+    boolean darkenSites() {
+        return prefs.getBoolean("darkenSites", false);
+    }
+
+    void setDarkenSites(boolean on) {
+        prefs.edit().putBoolean("darkenSites", on).apply();
+    }
+
     boolean desktopMode() {
         return prefs.getBoolean("desktopMode", false);
     }

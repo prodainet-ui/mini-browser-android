@@ -7,6 +7,7 @@ import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -95,9 +96,70 @@ public class MainActivity extends Activity {
 
     // ───────────────────────────── Запуск ─────────────────────────────
 
+    // ───── Тема оформления: подменяем ночной режим для окна приложения ─────
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        String theme = Store.theme(base);
+        if ("system".equals(theme)) {
+            super.attachBaseContext(base);
+            return;
+        }
+        Configuration config = new Configuration(base.getResources().getConfiguration());
+        config.uiMode = (config.uiMode & ~Configuration.UI_MODE_NIGHT_MASK)
+                | ("dark".equals(theme) ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO);
+        super.attachBaseContext(base.createConfigurationContext(config));
+    }
+
+    private boolean isDark() {
+        return (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK)
+                == Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    private boolean startedDark;
+
+    /** Система сменила тему (например, вечером) — перестраиваем окно, если выбрано «Как в системе». */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (!"system".equals(Store.theme(this))) return;
+        boolean dark = (newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+        if (dark != startedDark) recreate();
+    }
+
+    private void chooseTheme() {
+        String[] ids = {"system", "light", "dark"};
+        String[] labels = {"Как в системе", "Светлая", "Тёмная"};
+        int checked = java.util.Arrays.asList(ids).indexOf(Store.theme(this));
+        new AlertDialog.Builder(this)
+                .setTitle("Тема оформления")
+                .setSingleChoiceItems(labels, Math.max(checked, 0), (d, which) -> {
+                    d.dismiss();
+                    if (ids[which].equals(Store.theme(this))) return;
+                    store.setTheme(ids[which]);
+                    recreate(); // вкладки сохранятся и откроются снова
+                })
+                .setNegativeButton("Отмена", null)
+                .show();
+    }
+
+    private void toggleDarkenSites() {
+        boolean on = !store.darkenSites();
+        store.setDarkenSites(on);
+        for (Tab t : tabs) applyDarkening(t.view);
+        if (current != null && current.pendingUrl == null) current.view.reload();
+        toast(on ? "Сайты будут затемняться в тёмной теме" : "Сайты отображаются как есть");
+    }
+
+    /** Android 13+: затемнять сайты без собственной тёмной версии. */
+    private void applyDarkening(WebView wv) {
+        if (Build.VERSION.SDK_INT >= 33) wv.getSettings().setAlgorithmicDarkeningAllowed(store.darkenSites());
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startedDark = isDark();
         setContentView(R.layout.activity_main);
         store = new Store(this);
 
@@ -357,6 +419,8 @@ public class MainActivity extends Activity {
         s.setAllowFileAccess(false); // начальная страница из assets всё равно доступна
         if (defaultUserAgent == null) defaultUserAgent = s.getUserAgentString();
         s.setUserAgentString(userAgent(store.desktopMode()));
+        applyDarkening(wv);
+        if (isDark()) wv.setBackgroundColor(getColor(R.color.bar));
         CookieManager.getInstance().setAcceptThirdPartyCookies(wv, true);
 
         wv.setWebViewClient(new PageClient(tab));
@@ -633,7 +697,9 @@ public class MainActivity extends Activity {
                 + "h1{font-weight:500;font-size:24px;color:#202124;margin:0 0 12px}"
                 + ".url{color:#5f6368;word-break:break-all}.code{color:#80868b;font-size:13px;margin-top:20px}"
                 + "a{display:inline-block;margin-top:20px;background:#1a73e8;color:#fff;text-decoration:none;"
-                + "padding:11px 24px;border-radius:8px;font-weight:500}</style></head><body>"
+                + "padding:11px 24px;border-radius:8px;font-weight:500}"
+                + "@media (prefers-color-scheme:dark){body{background:#202124;color:#bdc1c6}h1{color:#e8eaed}"
+                + "a{background:#8ab4f8;color:#202124}}</style></head><body>"
                 + "<h1>Не удаётся открыть сайт</h1><p class=url>" + u + "</p><p>" + hint + "</p>"
                 + "<a href=\"" + u + "\">Повторить</a>"
                 + "<p class=code>" + TextUtils.htmlEncode(description) + " (" + code + ")</p></body></html>";
@@ -697,7 +763,8 @@ public class MainActivity extends Activity {
     // ───────────────────────────── Меню ─────────────────────────────
 
     private static final int M_NEW_TAB = 1, M_BOOKMARK = 2, M_BOOKMARKS = 3, M_HISTORY = 4, M_FIND = 5,
-            M_SHARE = 6, M_DESKTOP = 7, M_DOWNLOADS = 8, M_CLEAR = 9, M_ABOUT = 10;
+            M_SHARE = 6, M_DESKTOP = 7, M_DOWNLOADS = 8, M_CLEAR = 9, M_ABOUT = 10,
+            M_THEME = 11, M_DARKEN = 12;
 
     private void showMenu(View anchor) {
         PopupMenu popup = new PopupMenu(this, anchor);
@@ -713,6 +780,9 @@ public class MainActivity extends Activity {
         m.add(0, M_FIND, 5, "Найти на странице").setEnabled(web);
         m.add(0, M_SHARE, 6, "Поделиться ссылкой").setEnabled(web);
         m.add(0, M_DESKTOP, 7, "Версия для ПК").setCheckable(true).setChecked(store.desktopMode());
+        m.add(0, M_THEME, 7, "Тема оформления…");
+        if (Build.VERSION.SDK_INT >= 33)
+            m.add(0, M_DARKEN, 7, "Затемнять все сайты").setCheckable(true).setChecked(store.darkenSites());
         m.add(0, M_CLEAR, 8, "Очистить данные браузера");
         m.add(0, M_ABOUT, 9, "О программе");
         popup.setOnMenuItemClickListener(item -> {
@@ -727,6 +797,8 @@ public class MainActivity extends Activity {
                 case M_DESKTOP: toggleDesktopMode(); break;
                 case M_CLEAR: clearData(); break;
                 case M_ABOUT: showAbout(); break;
+                case M_THEME: chooseTheme(); break;
+                case M_DARKEN: toggleDarkenSites(); break;
                 default: return false;
             }
             return true;

@@ -59,7 +59,7 @@
             android:id="@+id/webContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/white" />
+            android:background="@color/bar" />
 
         <!-- Список вкладок -->
         <LinearLayout
@@ -98,7 +98,7 @@
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:text="+ Новая вкладка"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/on_accent"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 

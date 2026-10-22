@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bar">#202124</color>
+    <color name="field">#303134</color>
+    <color name="text">#E8EAED</color>
+    <color name="muted">#9AA0A6</color>
+    <color name="icon">#E8EAED</color>
+    <color name="accent">#8AB4F8</color>
+    <color name="line">#3C4043</color>
+    <color name="overlay">#171717</color>
+    <color name="tab_card">#2A2B2E</color>
+    <color name="tab_active">#283142</color>
+    <color name="ripple">#33FFFFFF</color>
+    <color name="on_accent">#202124</color>
+</resources>
