@@ -45,3 +45,16 @@ jobs:
             Если Windows покажет «Windows защитила ваш компьютер», нажмите «Подробнее» → «Выполнить в любом случае».
           files: desktop/dist/MiniBrowser-Setup.exe
           make_latest: false
+
+      # Постоянная ссылка на свежий установщик: .../releases/download/windows/MiniBrowser-Setup.exe
+      - name: Обновление постоянной ссылки
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: windows
+          name: Мой браузер для Windows — последняя версия
+          body: |
+            Здесь всегда лежит самый свежий установщик.
+            Скачайте **MiniBrowser-Setup.exe** и запустите его. Если Windows покажет «Windows защитила ваш компьютер», нажмите «Подробнее» → «Выполнить в любом случае».
+          files: desktop/dist/MiniBrowser-Setup.exe
+          overwrite_files: true
+          make_latest: false
