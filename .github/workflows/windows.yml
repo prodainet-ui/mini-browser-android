@@ -1,0 +1,47 @@
+name: Установщик для Windows
+
+on:
+  push:
+    branches: [main]
+    paths: ['desktop/**', '.github/workflows/windows.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Зависимости
+        run: npm install --no-audit --no-fund
+
+      - name: Сборка установщика
+        run: npm run dist
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Версия
+        id: v
+        shell: bash
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Публикация в Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: windows-v${{ steps.v.outputs.version }}-${{ github.run_number }}
+          name: Мой браузер для Windows ${{ steps.v.outputs.version }}
+          body: |
+            Скачайте **MiniBrowser-Setup.exe** и запустите его.
+            Если Windows покажет «Windows защитила ваш компьютер», нажмите «Подробнее» → «Выполнить в любом случае».
+          files: desktop/dist/MiniBrowser-Setup.exe
+          make_latest: false

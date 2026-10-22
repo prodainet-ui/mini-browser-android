@@ -1,0 +1,47 @@
+{
+  "name": "minibrowser",
+  "productName": "MiniBrowser",
+  "version": "1.1.0",
+  "description": "Мой браузер",
+  "main": "main.js",
+  "author": "Marzhan",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "45.0.0",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "kz.marzhan.minibrowser",
+    "productName": "MiniBrowser",
+    "copyright": "© 2026 Marzhan",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["main.js", "preload.js", "start-preload.js", "ui/**", "package.json"],
+    "electronLanguages": ["ru", "en-US"],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico",
+      "executableName": "MiniBrowser",
+      "signAndEditExecutable": true
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": "always",
+      "createStartMenuShortcut": true,
+      "shortcutName": "Мой браузер",
+      "uninstallDisplayName": "Мой браузер",
+      "installerLanguages": ["ru_RU"],
+      "language": "1049",
+      "multiLanguageInstaller": false,
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "artifactName": "MiniBrowser-Setup.exe"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src * data: blob:; style-src 'self'; script-src 'self'">
+  <title>Мой браузер</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="tabstrip">
+    <div id="tabs" role="tablist"></div>
+    <button id="newtab" class="icon" data-icon="plus" title="Новая вкладка (Ctrl+T)"></button>
+    <div id="strip-space" title="Двойной щелчок — новая вкладка"></div>
+  </div>
+
+  <div id="nav">
+    <button id="back" class="icon" data-icon="back" title="Назад (Alt+←)"></button>
+    <button id="forward" class="icon" data-icon="forward" title="Вперёд (Alt+→)"></button>
+    <button id="reload" class="icon" data-icon="reload" title="Обновить (F5)"></button>
+    <button id="home" class="icon" data-icon="home" title="Домашняя страница (Alt+Home)"></button>
+
+    <div id="omnibox">
+      <span id="site-icon" class="site" data-icon="search"></span>
+      <input id="address" type="text" spellcheck="false" autocomplete="off"
+             placeholder="Введите адрес или поисковый запрос">
+      <button id="zoom" class="pill" title="Сбросить масштаб (Ctrl+0)" hidden>100%</button>
+      <button id="star" class="icon small" data-icon="star" title="Добавить в закладки (Ctrl+D)"></button>
+    </div>
+
+    <button id="downloads" class="icon" data-icon="download" title="Загрузки (Ctrl+J)">
+      <span id="dl-badge" hidden></span>
+    </button>
+    <button id="menu" class="icon" data-icon="menu" title="Меню"></button>
+  </div>
+
+  <div id="bookmarks">
+    <div id="bookmark-list"></div>
+    <button id="bookmark-more" class="icon small" data-icon="more" title="Остальные закладки" hidden></button>
+  </div>
+
+  <div id="findbar" hidden>
+    <span class="site" data-icon="search"></span>
+    <input id="find-input" type="text" spellcheck="false" placeholder="Найти на странице">
+    <span id="find-count"></span>
+    <button id="find-prev" class="icon small" data-icon="up" title="Предыдущее (Shift+Enter)"></button>
+    <button id="find-next" class="icon small" data-icon="down" title="Следующее (Enter)"></button>
+    <button id="find-close" class="icon small" data-icon="close" title="Закрыть (Esc)"></button>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
