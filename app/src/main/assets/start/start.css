@@ -60,24 +60,31 @@ main {
   font-variant-numeric: tabular-nums;
 }
 #date { margin-top: 10px; font-size: 18px; color: var(--muted); text-transform: capitalize; }
-#greeting {
-  margin-top: 6px;
-  font-size: 26px;
-  font-weight: 500;
-  border-radius: 10px;
-  padding: 2px 10px;
-}
-#greeting:hover { background: rgba(255,255,255,.1); }
-#greeting-input {
-  margin-top: 6px;
-  font-size: 22px;
+#fact {
+  display: block;
+  margin: 16px auto 0;
+  max-width: 640px;
+  padding: 10px 18px;
+  border-radius: 14px;
   text-align: center;
-  width: 280px;
-  padding: 6px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--glass-line);
-  background: rgba(0,0,0,.25);
-  outline: 0;
+  transition: background .15s, opacity .18s;
+}
+#fact:hover { background: rgba(255,255,255,.1); }
+#fact.fading { opacity: 0; }
+#fact-cat {
+  display: block;
+  font-size: 12px;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+#fact-text {
+  display: block;
+  font-size: 19px;
+  line-height: 1.4;
+  font-weight: 500;
+  text-wrap: balance;
 }
 
 /* ─── Поиск ─── */
@@ -337,7 +344,8 @@ main {
   main { padding: 5vh 16px 90px; gap: 22px; }
   #clock { font-size: 64px; letter-spacing: -1px; }
   #date { font-size: 15px; margin-top: 6px; }
-  #greeting { font-size: 20px; }
+  #fact { padding: 8px 10px; margin-top: 12px; }
+  #fact-text { font-size: 16px; }
   #search { height: 48px; padding: 0 16px; }
   #q { font-size: 16px; }
   #tiles { grid-template-columns: repeat(4, 1fr); gap: 6px; }

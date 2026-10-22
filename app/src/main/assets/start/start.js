@@ -34,46 +34,49 @@ const svg = path => `<svg viewBox="0 0 24 24" aria-hidden="true">${path}</svg>`;
 const ICON_CLOSE = svg('<path d="M6 6l12 12M18 6L6 18"/>');
 const ICON_PLUS = svg('<path d="M12 5v14M5 12h14"/>');
 
-// ───────────────────────────── Часы и приветствие ─────────────────────────────
+// ───────────────────────────── Часы и факт дня ─────────────────────────────
 
 function tickClock() {
   const now = new Date();
   $('clock').textContent = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   $('date').textContent = now.toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
-  renderGreeting(now);
 }
 
-function renderGreeting(now = new Date()) {
-  const h = now.getHours();
-  const part = h < 5 ? 'Доброй ночи' : h < 12 ? 'Доброе утро' : h < 18 ? 'Добрый день' : 'Добрый вечер';
-  const name = store.get('name', 'Маржан');
-  const btn = $('greeting');
-  if (btn) btn.textContent = name ? `${part}, ${name}!` : `${part}!`;
+// Факты идут в случайном порядке без повторов, пока не закончится весь список.
+function nextFact() {
+  const facts = window.FACTS || [];
+  if (!facts.length) return null;
+  let order = store.get('factOrder', []);
+  let pos = store.get('factPos', 0);
+  if (!Array.isArray(order) || order.length !== facts.length || pos >= order.length) {
+    const last = order[order.length - 1];
+    order = facts.map((_, i) => i);
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    if (order[0] === last && order.length > 1) [order[0], order[1]] = [order[1], order[0]];
+    pos = 0;
+  }
+  store.set('factOrder', order);
+  store.set('factPos', pos + 1);
+  return facts[order[pos]];
 }
 
-$('greeting').addEventListener('click', () => {
-  const btn = $('greeting');
-  const input = document.createElement('input');
-  input.id = 'greeting-input';
-  input.value = store.get('name', 'Маржан');
-  input.placeholder = 'Ваше имя';
-  btn.replaceWith(input);
-  input.focus();
-  input.select();
-  let done = false;
-  const finish = save => {
-    if (done) return;
-    done = true;
-    if (save) store.set('name', input.value.trim());
-    input.replaceWith(btn);
-    renderGreeting();
+function showFact(animate) {
+  const fact = nextFact();
+  if (!fact) { $('fact').hidden = true; return; }
+  const apply = () => {
+    $('fact-cat').textContent = fact.c;
+    $('fact-text').textContent = fact.f;
+    $('fact').classList.remove('fading');
   };
-  input.addEventListener('keydown', e => {
-    if (e.key === 'Enter') finish(true);
-    if (e.key === 'Escape') finish(false);
-  });
-  input.addEventListener('blur', () => finish(true));
-});
+  if (!animate) { apply(); return; }
+  $('fact').classList.add('fading');
+  setTimeout(apply, 180);
+}
+
+$('fact').addEventListener('click', () => showFact(true));
 
 // ───────────────────────────── Поиск ─────────────────────────────
 
@@ -432,6 +435,7 @@ $('photo').addEventListener('change', e => {
 applyTheme();
 renderThemePicker();
 tickClock();
+showFact(false);
 setInterval(tickClock, 10 * 1000);
 renderTiles();
 loadWeather();
